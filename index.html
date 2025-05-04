@@ -2,128 +2,167 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Game Center</title>
+  <title>Wilz Game - Tic Tac Toe</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #667eea, #764ba2);
-      color: #fff;
       margin: 0;
-      padding: 0;
-      text-align: center;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1d2671, #c33764);
+      color: #fff;
+      overflow-x: hidden;
     }
 
     .container {
-      padding: 50px;
-      transition: all 0.5s ease-in-out;
+      text-align: center;
+      padding: 60px 20px;
+      animation: fadeIn 1.5s ease;
     }
 
     h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.2em;
+      color: #ffdddd;
       margin-bottom: 40px;
     }
 
-    .game-list button {
-      padding: 15px 30px;
-      margin: 20px;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      background: #ffffff22;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
+    .game-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      animation: slideIn 1s ease-in-out;
     }
 
-    .game-list button:hover {
-      background: #ffffff44;
+    .game-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #fff;
+      border-radius: 12px;
+      padding: 20px 30px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .game-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
     }
 
     .game-section {
       display: none;
-      opacity: 0;
-      transition: opacity 0.5s ease;
+      margin-top: 40px;
+      animation: fadeIn 1s ease;
     }
 
     .show {
       display: block;
-      opacity: 1;
     }
 
     .board {
       display: grid;
       grid-template-columns: repeat(3, 100px);
-      gap: 5px;
+      gap: 10px;
       justify-content: center;
-      margin-top: 30px;
+      margin: 30px auto;
     }
 
     .cell {
       width: 100px;
       height: 100px;
+      font-size: 2.5em;
       background: #fff;
       color: #333;
-      font-size: 48px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      border-radius: 10px;
       transition: background 0.2s;
     }
 
     .cell:hover {
-      background: #f0f0f0;
+      background: #e0e0e0;
     }
 
     #status {
+      font-size: 1.4em;
       margin-top: 20px;
-      font-size: 20px;
     }
 
     .back-btn {
       margin-top: 30px;
-      background: #444;
+      background: #00000055;
       padding: 10px 20px;
       border-radius: 10px;
+      border: none;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
+    .footer {
+      margin-top: 60px;
+      font-size: 1em;
+      color: #ccc;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Game Center</h1>
-    <div class="game-list">
-      <button onclick="openGame('ticTacToe')">Mainkan Tic Tac Toe</button>
+    <h1>Wilz Game</h1>
+    <div class="subtitle">Pilih salah satu dari 5 mode Tic Tac Toe</div>
+
+    <div class="game-options">
+      <div class="game-button" onclick="openGame('classic')">Tic Tac Toe Klasik</div>
+      <div class="game-button">Tic Tac Toe Cepat</div>
+      <div class="game-button">Tic Tac Toe vs AI</div>
+      <div class="game-button">Tic Tac Toe Waktu</div>
+      <div class="game-button">Tic Tac Toe 2 Pemain</div>
     </div>
 
-    <div id="ticTacToe" class="game-section">
-      <h2>Tic Tac Toe</h2>
+    <!-- Game Klasik -->
+    <div id="classic" class="game-section">
+      <h2>Mode: Tic Tac Toe Klasik</h2>
       <div class="board" id="board"></div>
       <div id="status">Giliran: X</div>
       <button class="back-btn" onclick="backToMenu()">Kembali ke Menu</button>
     </div>
+
+    <div class="footer">Dibuat oleh Wilz - 2025</div>
   </div>
 
   <script>
     let currentPlayer = 'X';
     let boardState = ["", "", "", "", "", "", "", "", ""];
     const winCombos = [
-      [0,1,2],[3,4,5],[6,7,8], // baris
-      [0,3,6],[1,4,7],[2,5,8], // kolom
-      [0,4,8],[2,4,6]          // diagonal
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
     ];
 
-    function openGame(id) {
-      document.querySelector('.game-list').style.display = 'none';
-      const game = document.getElementById(id);
-      game.classList.add('show');
+    function openGame(mode) {
+      document.querySelector('.game-options').style.display = 'none';
+      document.getElementById(mode).classList.add('show');
       initGame();
     }
 
     function backToMenu() {
-      document.querySelector('.game-list').style.display = 'block';
-      const game = document.getElementById('ticTacToe');
-      game.classList.remove('show');
-      resetGame();
+      document.querySelector('.game-options').style.display = 'flex';
+      document.getElementById('classic').classList.remove('show');
     }
 
     function initGame() {
@@ -168,10 +207,6 @@
     function endGame() {
       const cells = document.querySelectorAll('.cell');
       cells.forEach(cell => cell.removeEventListener('click', handleMove));
-    }
-
-    function resetGame() {
-      document.getElementById('ticTacToe').classList.remove('show');
     }
   </script>
 </body>
