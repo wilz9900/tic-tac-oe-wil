@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Game Center</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    .container {
+      padding: 50px;
+      transition: all 0.5s ease-in-out;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+    }
+
+    .game-list button {
+      padding: 15px 30px;
+      margin: 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: #ffffff22;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .game-list button:hover {
+      background: #ffffff44;
+    }
+
+    .game-section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .show {
+      display: block;
+      opacity: 1;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: #fff;
+      color: #333;
+      font-size: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+
+    .cell:hover {
+      background: #f0f0f0;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+
+    .back-btn {
+      margin-top: 30px;
+      background: #444;
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Game Center</h1>
+    <div class="game-list">
+      <button onclick="openGame('ticTacToe')">Mainkan Tic Tac Toe</button>
+    </div>
+
+    <div id="ticTacToe" class="game-section">
+      <h2>Tic Tac Toe</h2>
+      <div class="board" id="board"></div>
+      <div id="status">Giliran: X</div>
+      <button class="back-btn" onclick="backToMenu()">Kembali ke Menu</button>
+    </div>
+  </div>
+
+  <script>
+    let currentPlayer = 'X';
+    let boardState = ["", "", "", "", "", "", "", "", ""];
+    const winCombos = [
+      [0,1,2],[3,4,5],[6,7,8], // baris
+      [0,3,6],[1,4,7],[2,5,8], // kolom
+      [0,4,8],[2,4,6]          // diagonal
+    ];
+
+    function openGame(id) {
+      document.querySelector('.game-list').style.display = 'none';
+      const game = document.getElementById(id);
+      game.classList.add('show');
+      initGame();
+    }
+
+    function backToMenu() {
+      document.querySelector('.game-list').style.display = 'block';
+      const game = document.getElementById('ticTacToe');
+      game.classList.remove('show');
+      resetGame();
+    }
+
+    function initGame() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      boardState = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = 'X';
+      document.getElementById('status').textContent = 'Giliran: ' + currentPlayer;
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleMove);
+        board.appendChild(cell);
+      }
+    }
+
+    function handleMove(e) {
+      const index = e.target.dataset.index;
+      if (boardState[index] === "") {
+        boardState[index] = currentPlayer;
+        e.target.textContent = currentPlayer;
+        if (checkWin(currentPlayer)) {
+          document.getElementById('status').textContent = 'Pemain ' + currentPlayer + ' menang!';
+          endGame();
+        } else if (boardState.every(cell => cell !== "")) {
+          document.getElementById('status').textContent = 'Seri!';
+          endGame();
+        } else {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          document.getElementById('status').textContent = 'Giliran: ' + currentPlayer;
+        }
+      }
+    }
+
+    function checkWin(player) {
+      return winCombos.some(combo =>
+        combo.every(index => boardState[index] === player)
+      );
+    }
+
+    function endGame() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => cell.removeEventListener('click', handleMove));
+    }
+
+    function resetGame() {
+      document.getElementById('ticTacToe').classList.remove('show');
+    }
+  </script>
+</body>
+</html>
